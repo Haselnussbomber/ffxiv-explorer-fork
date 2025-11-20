@@ -176,6 +176,8 @@ public class ExplorerPanel_View extends JScrollPane implements MouseListener, II
         if (item instanceof VirtualFolder) {
             var folder = (VirtualFolder) item;
             folder.populate();
+            ((DefaultTreeModel) fileTree.getModel()).nodeStructureChanged(folder);
+            
             if (folder.shouldAutoExpandChildren()) {
                 for (var i = 0; i < folder.getChildCount(); i++) {
                     final var child = folder.getChildAt(i);
@@ -204,7 +206,7 @@ public class ExplorerPanel_View extends JScrollPane implements MouseListener, II
 
         Object obj = ((DefaultMutableTreeNode) selectedPaths[0].getLastPathComponent()).getUserObject();
 
-        return (obj instanceof SqPackFolder);
+        return (obj instanceof SqPackFolder) || (obj instanceof SqPackIndexFile);
     }
 
     public ArrayList<SqPackIndexFile> getAllIndexFiles() {
@@ -419,7 +421,7 @@ public class ExplorerPanel_View extends JScrollPane implements MouseListener, II
         private boolean _populated = false;
 
         public VirtualFolder(String name, String displayName) {
-            super(null, false);
+            super(null, true);
             this.name = name;
             this.displayName = displayName;
         }
@@ -501,6 +503,7 @@ public class ExplorerPanel_View extends JScrollPane implements MouseListener, II
 
         @Override
         public boolean isLeaf() {
+            if (getUserObject() instanceof SqPackIndexFile) return false;
             return subfolders.isEmpty() && files.isEmpty() && (getFolder() == null || getFolder().getFiles().isEmpty());
         }
 
