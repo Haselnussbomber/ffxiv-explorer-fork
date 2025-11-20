@@ -1175,10 +1175,10 @@ public class FileManagerWindow extends JFrame implements TreeSelectionListener, 
                                     out.close();
                                 }
 
-                            } catch (
-                                    IOException e) {
+                            } catch (IOException e) {
                                 Utils.getGlobalLogger().error("", e);
                             }
+                            continue;
                         } else if (extension.equals(".png")) {
                             Texture_File tex = new Texture_File(data, indexFile.getEndian());
                             dataToSave = tex.getImage("png");
@@ -1238,12 +1238,8 @@ public class FileManagerWindow extends JFrame implements TreeSelectionListener, 
                     EARandomAccessFile out = new EARandomAccessFile(path + extension, "rw", ByteOrder.LITTLE_ENDIAN);
                     out.write(dataToSave, 0, dataToSave.length);
                     out.close();
-                } catch (
-                        FileNotFoundException e) {
-                    Utils.getGlobalLogger().error("", e);
-
-                } catch (
-                        IOException e) {
+                } catch (Exception e) {
+                    Utils.getGlobalLogger().error("Error extracting file: " + file.getName(), e);
                     e.printStackTrace();
                 }
             }
