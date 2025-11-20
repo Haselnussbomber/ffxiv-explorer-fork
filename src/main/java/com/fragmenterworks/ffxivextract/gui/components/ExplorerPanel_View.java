@@ -204,9 +204,8 @@ public class ExplorerPanel_View extends JScrollPane implements MouseListener, II
         if (selectedPaths.length != 1)
             return false;
 
-        Object obj = ((DefaultMutableTreeNode) selectedPaths[0].getLastPathComponent()).getUserObject();
-
-        return (obj instanceof SqPackFolder) || (obj instanceof SqPackIndexFile);
+        DefaultMutableTreeNode node = (DefaultMutableTreeNode) selectedPaths[0].getLastPathComponent();
+        return node instanceof VirtualFolder || node instanceof RootFolder;
     }
 
     public ArrayList<SqPackIndexFile> getAllIndexFiles() {
