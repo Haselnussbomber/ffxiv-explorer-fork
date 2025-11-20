@@ -132,6 +132,8 @@ public class FileManagerWindow extends JFrame implements TreeSelectionListener, 
         splitPane.setResizeWeight(0);
 
         fileTree.addTreeSelectionListener(this);
+        fileTree.addExtractListener(e -> extract(true));
+        fileTree.addExtractRawListener(e -> extract(false));
 
         JPanel pnlStatusBar = new JPanel();
         getContentPane().add(pnlStatusBar, BorderLayout.SOUTH);

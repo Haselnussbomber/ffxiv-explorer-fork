@@ -7,6 +7,7 @@ import com.fragmenterworks.ffxivextract.helpers.Utils;
 import com.fragmenterworks.ffxivextract.helpers.VersionUpdater;
 import com.fragmenterworks.ffxivextract.helpers.VersionUpdater.VersionCheckObject;
 import com.fragmenterworks.ffxivextract.paths.database.HashDatabase;
+import com.formdev.flatlaf.FlatLightLaf;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.config.Configurator;
@@ -24,7 +25,7 @@ public class Main {
 
         // Set to windows UI
         try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            FlatLightLaf.setup();
         } catch (Exception e) {
             e.printStackTrace();
         }

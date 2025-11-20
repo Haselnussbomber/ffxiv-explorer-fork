@@ -26,12 +26,21 @@ public class ExplorerPanel_View extends JScrollPane implements MouseListener, II
     private final JTree fileTree;
     private final RootFolder root = new RootFolder();
 
-    PopupMenu contextMenu;
+    JPopupMenu contextMenu;
+    JMenuItem copyPath;
+    JMenuItem extract;
+    JMenuItem extractRaw;
 
     public ExplorerPanel_View() {
         setBackground(Color.WHITE);
         fileTree = new JTree(root) {
-
+            @Override
+            public String convertValueToText(Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
+                if (value instanceof SelfRenderable) {
+                    return ((SelfRenderable) value).getNodeText();
+                }
+                return super.convertValueToText(value, selected, expanded, leaf, row, hasFocus);
+            }
         };
 
         var renderer = new DefaultTreeCellRenderer() {
@@ -59,8 +68,8 @@ public class ExplorerPanel_View extends JScrollPane implements MouseListener, II
         fileTree.addMouseListener(this);
         fileTree.addTreeWillExpandListener(this);
 
-        contextMenu = new PopupMenu();
-        MenuItem copyPath = new MenuItem("Copy full path");
+        contextMenu = new JPopupMenu();
+        copyPath = new JMenuItem("Copy full path");
         copyPath.addActionListener(e -> {
             TreePath[] selectedPaths = fileTree.getSelectionPaths();
 
@@ -81,13 +90,28 @@ public class ExplorerPanel_View extends JScrollPane implements MouseListener, II
             Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
             clip.setContents(selection, selection);
         });
+        
+        extract = new JMenuItem("Extract");
+        extractRaw = new JMenuItem("Extract Raw");
+        
         contextMenu.add(copyPath);
-        this.add(contextMenu);
+        contextMenu.addSeparator();
+        contextMenu.add(extract);
+        contextMenu.add(extractRaw);
+        // this.add(contextMenu); // JPopupMenu doesn't need to be added to the container like AWT PopupMenu
         this.getViewport().add(fileTree);
     }
 
     public void addTreeSelectionListener(TreeSelectionListener l) {
         fileTree.addTreeSelectionListener(l);
+    }
+
+    public void addExtractListener(java.awt.event.ActionListener l) {
+        extract.addActionListener(l);
+    }
+
+    public void addExtractRawListener(java.awt.event.ActionListener l) {
+        extractRaw.addActionListener(l);
     }
 
     public void fileOpened(SqPackIndexFile index) {
@@ -106,10 +130,30 @@ public class ExplorerPanel_View extends JScrollPane implements MouseListener, II
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        if (SwingUtilities.isRightMouseButton(e)) {
+        maybeShowPopup(e);
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+        maybeShowPopup(e);
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+        maybeShowPopup(e);
+    }
+
+    private void maybeShowPopup(MouseEvent e) {
+        if (e.isPopupTrigger()) {
             int row = fileTree.getClosestRowForLocation(e.getX(), e.getY());
             fileTree.setSelectionRow(row);
-            contextMenu.show(fileTree, e.getX(), e.getY());
+            
+            // Enable/Disable extract based on selection
+            boolean hasSelection = fileTree.getSelectionCount() > 0;
+            extract.setEnabled(hasSelection);
+            extractRaw.setEnabled(hasSelection);
+            
+            contextMenu.show(e.getComponent(), e.getX(), e.getY());
         }
     }
 
@@ -260,14 +304,6 @@ public class ExplorerPanel_View extends JScrollPane implements MouseListener, II
                 }
             }
         }
-    }
-
-    @Override
-    public void mousePressed(MouseEvent e) {
-    }
-
-    @Override
-    public void mouseReleased(MouseEvent e) {
     }
 
     @Override
@@ -539,4 +575,3 @@ public class ExplorerPanel_View extends JScrollPane implements MouseListener, II
         }
     }
 }
-
