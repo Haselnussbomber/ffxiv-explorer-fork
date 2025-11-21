@@ -257,6 +257,15 @@ public class EXDF_View extends JScrollPane implements ItemListener {
             @Override
             public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
                 Component component = super.prepareRenderer(renderer, row, column);
+
+                if (!isRowSelected(row)) {
+                    component.setBackground(row % 2 == 0 ? Color.WHITE : new Color(240, 240, 240));
+                    component.setForeground(Color.BLACK);
+                    if (component instanceof JComponent) {
+                        ((JComponent) component).setOpaque(true);
+                    }
+                }
+
                 int rendererWidth = component.getPreferredSize().width;
 
                 TableColumn tableColumn = getColumnModel().getColumn(column);
