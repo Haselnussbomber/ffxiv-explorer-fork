@@ -1,6 +1,7 @@
 package com.fragmenterworks.ffxivextract.gui.components;
 
 import com.fragmenterworks.ffxivextract.Constants;
+import com.fragmenterworks.ffxivextract.helpers.EXDSchemaLoader;
 import com.fragmenterworks.ffxivextract.helpers.FFXIV_String;
 import com.fragmenterworks.ffxivextract.helpers.SparseArray;
 import com.fragmenterworks.ffxivextract.helpers.Utils;
@@ -23,8 +24,6 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 
 @SuppressWarnings("serial")
@@ -780,31 +779,14 @@ public class EXDF_View extends JScrollPane implements ItemListener {
     }
 
     private void loadColumnNames(String exhname) {
+        String sheetName = exhname.replace(".exh", "");
+        java.util.Map<Integer, String> names = EXDSchemaLoader.loadColumnNames(sheetName);
 
-        String path = Constants.EXH_NAMES_PATH + exhname.replace("exh", "lst");
-        if (!Files.exists(Paths.get(path)))
-            return;
-        Utils.getGlobalLogger().info("Loading column names from {}", path);
-
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(path));
-            for (String line; (line = br.readLine()) != null; ) {
-                //Skip comments and whitespace
-                if (line.startsWith("#") || line.isEmpty())
-                    continue;
-                if (line.contains(":")) {
-                    String[] split = line.split(":", 2);
-                    if (split.length != 2)
-                        continue;
-
-                    if (split[1].isEmpty())
-                        continue;
-                    columnNames.put(Integer.parseInt(split[0]), split[1]);
-                }
+        if (!names.isEmpty()) {
+            Utils.getGlobalLogger().info("Loading column names from EXDSchema for {}", sheetName);
+            for (java.util.Map.Entry<Integer, String> entry : names.entrySet()) {
+                columnNames.put(entry.getKey(), entry.getValue());
             }
-            br.close();
-        } catch (IOException e) {
-            Utils.getGlobalLogger().error("", e);
         }
     }
 

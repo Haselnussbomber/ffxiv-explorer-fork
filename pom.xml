@@ -182,5 +182,10 @@
             <artifactId>jocl-main</artifactId>
             <version>2.4.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>2.3</version>
+        </dependency>
     </dependencies>
 </project>

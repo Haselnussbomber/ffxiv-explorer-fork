@@ -984,6 +984,17 @@ public class FileManagerWindow extends JFrame implements TreeSelectionListener, 
                             JOptionPane.ERROR_MESSAGE);
                     Utils.getGlobalLogger().error("", e);
                 }
+
+                if (indexFiles[i] != null && files[i].getName().equals("0a0000.win32.index")) {
+                    try {
+                        byte[] rootExl = indexFiles[i].extractFile("exd/root.exl");
+                        if (rootExl != null) {
+                            EXDSchemaLoader.parseRootExl(rootExl);
+                        }
+                    } catch (Exception e) {
+                        Utils.getGlobalLogger().error("Failed to load root.exl", e);
+                    }
+                }
             }
             return null;
         }
